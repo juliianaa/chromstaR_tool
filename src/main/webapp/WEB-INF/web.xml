@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <servlet-mapping>
+        <servlet-name>GenerateRScript</servlet-name>
+        <url-pattern>/GenerateRScript</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <servlet>
+        <servlet-name>FileUploadServlet</servlet-name>
+        <servlet-class>eriba.jwlgoh.webServlets.FileUploadServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GenerateRScript</servlet-name>
+        <servlet-class>eriba.jwlgoh.webServlets.GenerateRScriptServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FileUploadServlet</servlet-name>
+        <url-pattern>/FileUploadServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>DownloadZipFileServlet</servlet-name>
+        <servlet-class>eriba.jwlgoh.webServlets.DownloadZipFileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadZipFileServlet</servlet-name>
+        <url-pattern>/DownloadZipFileServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
