@@ -29,4 +29,12 @@
         <servlet-name>DownloadZipFileServlet</servlet-name>
         <url-pattern>/DownloadZipFileServlet</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>JobServlet</servlet-name>
+        <servlet-class>eriba.jwlgoh.webServlets.JobServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JobServlet</servlet-name>
+        <url-pattern>/JobServlet</url-pattern>
+    </servlet-mapping>
 </web-app>
