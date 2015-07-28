@@ -24,7 +24,6 @@ public class CallRMethods {
      * Upon receiving the parameters, this method will be calling the function in the R-script 
      * with the needed parameters for the calculations. 
      * 
-     * @param analysisOption
      * @param tmp_dir
      * @param noaPath
      * @param options

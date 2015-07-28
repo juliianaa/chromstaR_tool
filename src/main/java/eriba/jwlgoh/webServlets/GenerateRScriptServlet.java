@@ -16,12 +16,13 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
- *
+ * JavaServlet implementation class GenerateRScriptServlet
+ * 
  * @author Eriba
  */
 public class GenerateRScriptServlet extends HttpServlet {
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Upon receiving the values a R-script will be generated with te given values
      *
      * @param request servlet request
      * @param response servlet response
@@ -53,12 +54,14 @@ public class GenerateRScriptServlet extends HttpServlet {
                 }
             }
             
-            
+            //Path that is given by the user
             String pathToFile = (String) givenValues.get(0);
+            //Sets the list of settings to a String
             String settings = (String) givenValues.get(1);
+            //Splits the string to a list consist of three settings
             ArrayList<String> settingsValues = new ArrayList<>(Arrays.asList(settings.split(",")));
             
-            
+            //Sends the values to the ExportResults class to have the R-script generated.
             ExportResults export = new ExportResults();
             rScript = export.writeToRscript(pathToFile, settingsValues);
             
@@ -69,6 +72,7 @@ public class GenerateRScriptServlet extends HttpServlet {
             Logger.getLogger(GenerateRScriptServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        //Sends the generated script to the website page
         response.getWriter().print(rScript);
        
     }
