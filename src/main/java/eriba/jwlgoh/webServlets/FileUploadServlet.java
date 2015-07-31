@@ -15,22 +15,16 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  * JavaServlet implementation class FileUploadServlet
- * 
+ *
  * @author Eriba
  */
 public class FileUploadServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * Constructs a temporary directory path to store uploaded file(s)
-     */
-    CreateTempDir tmpDir = new CreateTempDir();
-    //Path of the root directory of the temporary directory
     private final String uploadPath = "/srv/molgenis/temp_chromstaR/";
-    private String tmp_dir = null;
+    private final CreateTempDir tmpDir = new CreateTempDir();
     private String user_dir = null;
-    private final String args = null;
+    private String tmp_dir = null;
 
     /**
      * Upon receiving the files and parameters that contain the R-package
@@ -80,14 +74,7 @@ public class FileUploadServlet extends HttpServlet {
                 //Splits the value to a list of multiple values for the analysis
                 ArrayList secondAnalysisList = new ArrayList<>(Arrays.asList(
                         secondAnalysisValue.split(",")));
-
-                //number of analysis
-                String x = (String) secondAnalysisList.get(0);
-                noa = noa + Integer.parseInt(x);
-
-                //Name for the results directory of the analysis
-                String resultsDirName = File.separator + "analysis_" + noa;
-
+                
                 //Path to the file where the previous files are for a second 
                 //analysis run
                 String tmp_dirAnalysis = (String) secondAnalysisList.get(1);
@@ -96,10 +83,15 @@ public class FileUploadServlet extends HttpServlet {
                 //if this value equals to the string none, this means that the 
                 //user is using the tool for the first time.
                 if (user_dirAnalysis.equals("none")) {
-
+//
                     //Creates a temporary User directory for the user in the 
                     //root directory
                     user_dir = tmpDir.createDir(uploadPath, "User_");
+
+                    //Creates a user file directory by calling the 
+                    //method to store the uploaded files, that are 
+                    //in the correct file format.
+                    tmp_dir = tmpDir.createDir(user_dir, "User_files_");
 
                     //Iterates over the form fields 
                     for (FileItem item : items) {
@@ -112,15 +104,11 @@ public class FileUploadServlet extends HttpServlet {
                                     | item.getName().endsWith("bed")
                                     | item.getName().endsWith(".bed.gz")) {
 
-                                //Creates a user file directory by calling the 
-                                //method to store the uploaded files.
-                                tmp_dir = tmpDir.createDir(user_dir, "User_files_");
-
                                 //Adds the filename to the list 
                                 fileName.add(item.getName());
 
-                                //Saves the file in the temporary directory 
-                                //that was created
+                                //Saves the file in the temporary file directory 
+                                //that was created for the accepted files
                                 String filePath = tmp_dir + File.separator
                                         + item.getName();
                                 File storeFile = new File(filePath);
@@ -129,20 +117,9 @@ public class FileUploadServlet extends HttpServlet {
                                 item.write(storeFile);
                             } else {
 
-                                ExportResults error = new ExportResults();
-
                                 System.out.println("wrong: " + item.getName());
-
-                                //Creates a directory where the error text file 
-                                //will be stored
-                                String error_dir = tmpDir.createDir(user_dir, "error_");
-
+                                // Adds the wrong file format to a list
                                 wrongFiles.add(item.getName());
-
-                                //writes a text file for a file error. This will
-                                //only be written when a wrong file format is 
-                                //given for the analysis
-                                error.writeErrorFile(error_dir, wrongFiles);
                             }
                         }
                     }
@@ -155,23 +132,25 @@ public class FileUploadServlet extends HttpServlet {
                     fileName.add("notEMPTY");
                 }
 
-                System.out.println("Jobs.startJob(" + fileName + "," + user_dir
-                        + "," + tmp_dir + "," + args + "," + checkedFunctions
-                        + "," + noa + ")");
-
-                //Sends the job with the required parameters for the analysis 
-                //and is saved as an integer
-                int jobNumber = Jobs.startJob(fileName, user_dir, tmp_dir, args,
-                        checkedFunctions, noa, resultsDirName);
-
-                //The jobNumber will be given back to the Ajax success, to be  
-                //used to check if the job is still running or not
-                response.getWriter().print(jobNumber);
-                response.getWriter().close();
+                System.out.println("Jobs.startJob(" + fileName + "," + checkedFunctions
+                        + "," + wrongFiles + "," + user_dir + "," + tmp_dir+ ")");
+                
             }
+                //Sends the job with the required parameters for the analysis 
+            //and is saved as an integer
+            int jobNumber = Jobs.startJob(fileName, checkedFunctions, wrongFiles, user_dir, tmp_dir);
+
+                 //The jobNumber will be given back to the Ajax success, to be  
+            //used to check if the job is still running or not
+            response.getWriter().print(jobNumber);
+            response.getWriter().close();
+            
+        } catch (FileUploadException ex) {
+            Logger.getLogger(FileUploadServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {
             Logger.getLogger(FileUploadServlet.class.getName()).log(Level.SEVERE, null, ex);
-            throw new ServletException(ex);
         }
+
     }
+
 }

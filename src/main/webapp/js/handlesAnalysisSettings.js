@@ -30,7 +30,8 @@ $(document).ready(function(){
 });
 
 function showAnlaysisSettings(){
-    $("#performButton").hide();
     $("#options").show(); 
     $("#sampleFile").hide(); 
+    $("#resultsTest").hide(); 
+    
 }

@@ -26,22 +26,28 @@ public class Jobs {
 
     final private static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    public static int startJob(final ArrayList<String> fileNames, final String userDir,
-            final String tmpDir, String arguments,
-            final ArrayList<Object> checked_functions, final int numberOfAnalyses,
-            final String resultsDirName) {
+    /**
+     *
+     * @param fileNames
+     * @param wrongFiles
+     * @param checked_functions
+     * @param user_dir
+     * @param tmp_dir
+     * @return
+     */
+    public static int startJob(final ArrayList<String> fileNames, 
+            final ArrayList<Object> checked_functions, final ArrayList<String> wrongFiles,
+            String user_dir, String tmp_dir) {
 
         Callable<String> jobje = () -> {
             String arguments1 = null;
             try {
                 //Tries to call the class/method JavaRIntegration and gives the Map.
                 System.out.println("call Java R integration START OF PROGRAM");
-                System.out.println(userDir + "    " + tmpDir + "    \n" + fileNames
-                        + "    \n" + checked_functions + "    " + numberOfAnalyses
-                        + "    \n" + "    " + resultsDirName);
+//                System.out.println(fileNames + "    " + checked_functions + "    \n" + wrongFiles);
                 JavaRIntegration calculateWithR = new JavaRIntegration();
-                arguments1 = calculateWithR.start(userDir, tmpDir, fileNames,
-                        checked_functions, numberOfAnalyses, resultsDirName);
+                arguments1 = calculateWithR.start(fileNames, checked_functions, wrongFiles,
+                        user_dir, tmp_dir);
             } catch (NullPointerException e) {
                 System.out.println("error servlet: " + e);
             }
@@ -59,6 +65,11 @@ public class Jobs {
         return jobNumber;
     }
 
+    /**
+     *
+     * @param jobNumber
+     * @return
+     */
     public static boolean isFinished(int jobNumber) {
         Future<String> job = jobs.get(jobNumber);
         if (job == null) {
@@ -67,6 +78,13 @@ public class Jobs {
         return job.isDone();
     }
 
+    /**
+     *
+     * @param jobNumber
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public static String getResult(int jobNumber) throws ExecutionException, InterruptedException {
         Future<String> job = jobs.get(jobNumber);
         if (job == null) {

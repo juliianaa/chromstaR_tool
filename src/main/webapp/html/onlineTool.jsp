@@ -33,14 +33,6 @@
                                 
                                 <button id="performButton" onclick="showAnlaysisSettings()">Perform another analysis </button>
                                 
-                                
-<!--                                <p id="test">
-                                    <form>
-                                        <input type="hidden" id='downloadLink' name="downloadResults" value="downloadPath"><br>
-                                        <input type="submit" value="Download" onclick="DownloadResultsAnalysis()">
-                                    </form>
-                                </p>-->
-                                
                             </div>
                             
                             <br style="clear:both" />

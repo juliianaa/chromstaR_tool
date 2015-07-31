@@ -26,7 +26,6 @@ public class ConnectWithR {
      *  return the current main R engine instance. Since there can be only one true R instance at a time, this is 
      * also the only instance. This may not be true for future versions, though.
      * 
-     * 3
      * (return statement)return current instance of the R engine or <code>null</code> if no R engine was started yet. 
      *
      * @return the connection that has been made with R

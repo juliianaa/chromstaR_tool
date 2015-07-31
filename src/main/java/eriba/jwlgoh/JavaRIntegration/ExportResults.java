@@ -19,13 +19,13 @@ public class ExportResults {
 
     /**
      * Writes the information of the settings and files that were used for the
-     * analysis to a .txt file
+     * analysis to a text file
      *
-     * @param analysisResultsDir
-     * @param resultsDirName
-     * @param settings
-     * @param fileNames
-     * @param noa
+     * @param analysisResultsDir path of where the results will be stored
+     * @param resultsDirName name of the directory
+     * @param settings settings that were used 
+     * @param fileNames names of the files uploaded
+     * @param noa number of analysis done
      */
     public void writeToTxt(String analysisResultsDir, String resultsDirName,
             ArrayList<String> settings, ArrayList<String> fileNames, int noa) {
@@ -33,22 +33,25 @@ public class ExportResults {
         System.out.println("Writing file");
 
         try {
-
+            
+            //First sentence in text file
             String firstSentence = "You gave the following file for analysis number " + noa + ": \n \n ";
-
+            
+            //text of analysis settings + values
             String Secondcontent = "\n Used the settings of: \n \n Bins: " + settings.get(0)
                     + " \n Univariate maximum time: " + settings.get(1)
                     + " \n Multivariate maximum time: " + settings.get(2);
-
+            
             File file = new File(analysisResultsDir + resultsDirName + "_settings.txt");
 
-            // if file doesnt exists, then create it
+            // Checks if file does not exists in the resuts directory.
+            // If not it will create the file
             if (!file.exists()) {
                 file.createNewFile();
             }
 
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            //writes the first sentence of the file about which files where used for the analysis
+           
             try (BufferedWriter bw = new BufferedWriter(fw)) {
                 //writes the first sentence of the file about which files where used for the analysis
                 bw.write(firstSentence);
@@ -78,14 +81,26 @@ public class ExportResults {
 
     }
 
-    public void writeErrorFile(String path, ArrayList<String> fileNames) throws IOException {
-
+    /**
+     * Writes an error message in a .txt file when a user uploads the wrong file format
+     * 
+     * @param user_dir path of where the user directory is
+     * @param fileNames list of the wrong uploaded file formats
+     * @throws IOException 
+     */
+    public void writeErrorFile(String user_dir, ArrayList<String> fileNames) throws IOException {
+        CreateTempDir tmpDir = new CreateTempDir();
+        //Creates a directory where the error text file 
+        //will be stored
+        String error_dir = tmpDir.createDir(user_dir, "error_");
+        
+        //Explanation of file format error 
         String firstSentence = "The given file(s) is/are not in the correct format. \n"
                 + " This program only accepts file in bed or bam format. \n"
                 + " A compressed bed file in the format .gz is accepted too. \n \n "
                 + " The file(s) you have given is/are: \n";
 
-        File file = new File(path + File.separator + "errorFile.txt");
+        File file = new File(error_dir + File.separator + "errorFile.txt");
 
         // if file doesnt exists, then create it
         if (!file.exists()) {
@@ -108,103 +123,49 @@ public class ExportResults {
 
     }
 
-    public String writeToRscript(String pathToFile, ArrayList<String> settingsValues) {
+    /**
+     * 
+     * 
+     * @param pathToFile
+     * @param settingsValues
+     * @return
+     */
+    public String writeToRscript(String pathToFile, ArrayList<String> settingsValues) throws FileNotFoundException, IOException {
 
-        String rScript = null;
+        
+        String GenerateRscript = null;
 
         if (pathToFile.contains("\\") | pathToFile.contains("/")) {
+            
+            if(pathToFile.contains("\\")){
+                pathToFile= pathToFile.replace("\\", File.separator);
+            }
+            File rScript = new File("/srv/molgenis/rScript/callChromstaROptions.R");
+            try (BufferedReader br = new BufferedReader(new FileReader(rScript))) {
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
 
-            pathToFile = pathToFile.replace("\\", File.separator);
-
-            rScript
-                    = "#install.packages(\"chromstaR\")<br />"
-                    + "<br />"
-                    + "library(chromstaR)<br />"
-                    + "<br />"
-                    + "runDefaultUniFile <- function(bedFile, bins, uMaxT){<br />"
-                    + "  binned.data3 <- bed2binned(bedFile, assembly='hg19', binsize=bins, save.as.RData=FALSE)<br />"
-                    + "  <br />"
-                    + "  # Fit the univariate Hidden Markov Model<br />"
-                    + "  uni.HMM <- callPeaksUnivariate(binned.data3, ID='example_H3K36me3', max.time=uMaxT)<br />"
-                    + "  <br />"
-                    + "  exportUnivariates(list(uni.HMM), filename = \"exportedFilesUnivariates\", what = 'peaks')<br />"
-                    + "  <br />"
-                    + "  setwd(a)<br />"
-                    + "  <br />"
-                    + "  pdf(\"exported_Univariate_plots.pdf\")<br />"
-                    + "  <br />"
-                    + "  print(plot(uni.HMMs[[1]], type=\"histogram\"))<br />"
-                    + "  print(plot(uni.HMMs[[1]], type=\"karyogram\"))<br />"
-                    + "  print(plot(uni.HMMs[[1]], type=\"boxplot\"))<br />"
-                    + "  print(plot(uni.HMMs[[1]], type=\"normalTransformation\"))<br />"
-                    + "  <br />"
-                    + "  dev.off()<br />"
-                    + "}<br />"
-                    + "<br />"
-                    + "runChromstaROptions <- function(bedFiles, bins, uMaxT, mMaxT){<br />"
-                    + "  <br />"
-                    + "  uni.HMMs <- list()<br />"
-                    + "  binned.data.list <- list()<br />"
-                    + "  <br />"
-                    + "  for (bedfile in bedFiles) {<br />"
-                    + "    binned.data <- bed2binned(bedfile, assembly='hg19', binsize=bins, save.as.RData=F)<br />"
-                    + "    binned.data.list[[bedfile]] <- binned.data<br />"
-                    + "    uni.HMMs[[bedfile]] <- callPeaksUnivariate(binned.data, ID=basename(bedfile), max.time=uMaxT, eps=0.01)<br />"
-                    + "  }<br />"
-                    + "  <br />"
-                    + "  multi.hmm <- callPeaksMultivariate(uni.HMMs, eps=0.1, max.time=mMaxT)<br />"
-                    + "  <br />"
-                    + "  <br />"
-                    + "  exportUnivariates(uni.HMMs, filename=\"exportedFilesUnivariates\", what = 'peaks')<br />"
-                    + "  exportMultivariate(multi.hmm,file=\"exportFilesMultivariate\",exclude.states=c(0,127), what = 'peaks')<br />"
-                    + "  <br />"
-                    + "  pdf(\"exported_Univariate_plots.pdf\")<br />"
-                    + "  <br />"
-                    + "  for (i in seq(uni.HMMs)){<br />"
-                    + "    print(plot(uni.HMMs[[i]], type=\"histogram\"))<br />"
-                    + "    print(plot(uni.HMMs[[i]], type=\"karyogram\"))<br />"
-                    + "    print(plot(uni.HMMs[[i]], type=\"boxplot\"))<br />"
-                    + "    print(plot(uni.HMMs[[i]], type=\"normalTransformation\"))<br />"
-                    + "  }<br />"
-                    + "  <br />"
-                    + "  dev.off()<br />"
-                    + "  <br />"
-                    + "  pdf(\"exported_Multivariate_plots.pdf\")<br />"
-                    + "  <br />"
-                    + "  print(plot(multi.hmm, type=\"histograms\"))<br />"
-                    + "  print(plot(multi.hmm, type=\"transitionMatrix\"))<br />"
-                    + "  <br />"
-                    + "  dev.off()<br />"
-                    + "  <br />"
-                    + "}<br />"
-                    + "<br />"
-                    + "inputOption <- function(p,bins, uMaxT, mMaxT){<br />"
-                    + "  <br />"
-                    + "  bedFiles <- list.files(p, full=T)<br />"
-                    + "  <br />"
-                    + "  setwd(p)<br />"
-                    + "  <br />"
-                    + "  if(length(bedFiles) == 1){<br />"
-                    + "    <br />"
-                    + "    runDefaultUniFile(bedFiles, bins, u)<br />"
-                    + "    <br />"
-                    + "  }else{<br />"
-                    + "    <br />"
-                    + "    runChromstaROptions(bedFiles, bins, u, m)<br />"
-                    + "    <br />"
-                    + "  }<br />"
-                    + "  <br />"
-                    + "}<br />"
-                    + "<br />"
-                    + "<br />"
-                    + "inputOption(\"" + pathToFile + "\"," + settingsValues.get(0) + "," + settingsValues.get(1) + "," + settingsValues.get(2) + ")";
-
+                while (line != null) {
+                    sb.append(line + "\n");
+                    sb.append("\n");
+                    line = br.readLine();
+                }
+                
+                String input = "inputOption(\"" + pathToFile + "\"," + 500 + "," + 1000 + "," + 1000 + ")";
+                GenerateRscript = sb.toString() + input;
+                
+                
+                
+            }
+            
+            
+            
+            
         } else {
-            rScript = "The path given is not a valid path";
-
+            GenerateRscript = "The path given is not a valid path";
         }
-
-        return rScript;
+        
+        return GenerateRscript;
 
     }
 
