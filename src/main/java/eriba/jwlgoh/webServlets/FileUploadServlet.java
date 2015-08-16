@@ -74,7 +74,7 @@ public class FileUploadServlet extends HttpServlet {
                 //Splits the value to a list of multiple values for the analysis
                 ArrayList secondAnalysisList = new ArrayList<>(Arrays.asList(
                         secondAnalysisValue.split(",")));
-                
+
                 //Path to the file where the previous files are for a second 
                 //analysis run
                 String tmp_dirAnalysis = (String) secondAnalysisList.get(1);
@@ -133,18 +133,18 @@ public class FileUploadServlet extends HttpServlet {
                 }
 
                 System.out.println("Jobs.startJob(" + fileName + "," + checkedFunctions
-                        + "," + wrongFiles + "," + user_dir + "," + tmp_dir+ ")");
-                
+                        + "," + wrongFiles + "," + user_dir + "," + tmp_dir + ")");
+
             }
-                //Sends the job with the required parameters for the analysis 
+            //Sends the job with the required parameters for the analysis 
             //and is saved as an integer
             int jobNumber = Jobs.startJob(fileName, checkedFunctions, wrongFiles, user_dir, tmp_dir);
 
-                 //The jobNumber will be given back to the Ajax success, to be  
+            //The jobNumber will be given back to the Ajax success, to be  
             //used to check if the job is still running or not
             response.getWriter().print(jobNumber);
             response.getWriter().close();
-            
+
         } catch (FileUploadException ex) {
             Logger.getLogger(FileUploadServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {

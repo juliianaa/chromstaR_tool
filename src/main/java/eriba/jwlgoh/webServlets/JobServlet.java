@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 
 import javax.servlet.http.*;
 
-
 /**
  * JavaServlet implementation class JobServlet
  */
@@ -30,12 +29,12 @@ public class JobServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException, NumberFormatException {
-        
+
         //Retrieve the jobnumber of the Job
         int jobNumber = Integer.parseInt(request.getParameter("jobNumber"));
-        
+
         //Checks if the Job is done or not
-        if(Jobs.isFinished(jobNumber)) {
+        if (Jobs.isFinished(jobNumber)) {
             try {
                 //if the job is done
                 String result = Jobs.getResult(jobNumber);
@@ -48,7 +47,7 @@ public class JobServlet extends HttpServlet {
             //if the job is not done
             response.getWriter().print("Still running");
         }
-        
+
         response.getWriter().close();
     }
 }

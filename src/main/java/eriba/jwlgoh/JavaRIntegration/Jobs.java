@@ -16,8 +16,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * This class contains three methods which starts a job and checks if a job is 
+ * finished. If the job is finished the result will be retrieved.
  *
- * @author Eriba
+ * @author jwlgoh
  */
 public class Jobs {
 
@@ -27,7 +29,9 @@ public class Jobs {
     final private static ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /**
-     *
+     * This method starts the job from a user. The job receives multiple variables
+     * and will send it to the program to start the analysis of the user.
+     * 
      * @param fileNames
      * @param wrongFiles
      * @param checked_functions
@@ -35,7 +39,7 @@ public class Jobs {
      * @param tmp_dir
      * @return
      */
-    public static int startJob(final ArrayList<String> fileNames, 
+    public static int startJob(final ArrayList<String> fileNames,
             final ArrayList<Object> checked_functions, final ArrayList<String> wrongFiles,
             String user_dir, String tmp_dir) {
 
@@ -44,7 +48,7 @@ public class Jobs {
             try {
                 //Tries to call the class/method JavaRIntegration and gives the Map.
                 System.out.println("call Java R integration START OF PROGRAM");
-//                System.out.println(fileNames + "    " + checked_functions + "    \n" + wrongFiles);
+                //System.out.println(fileNames + "    " + checked_functions + "    \n" + wrongFiles);
                 JavaRIntegration calculateWithR = new JavaRIntegration();
                 arguments1 = calculateWithR.start(fileNames, checked_functions, wrongFiles,
                         user_dir, tmp_dir);
@@ -66,7 +70,8 @@ public class Jobs {
     }
 
     /**
-     *
+     * This method checks if the job is done with the help of the job number.
+     * 
      * @param jobNumber
      * @return
      */
@@ -79,7 +84,8 @@ public class Jobs {
     }
 
     /**
-     *
+     * This method checks if the job is finished with the help of the job number.
+     * 
      * @param jobNumber
      * @return
      * @throws ExecutionException

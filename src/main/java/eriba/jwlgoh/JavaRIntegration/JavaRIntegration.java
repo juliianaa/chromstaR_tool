@@ -29,8 +29,8 @@ public class JavaRIntegration {
      * be send to the next method with the needed values to retrieve the
      * results.
      *
-     * @param fileNames contains the name of the uploaded files
-     * @param checkedFunctions contains the settings for the analysis in R
+     * @param fileNames
+     * @param checkedFunctions
      * @param wrongFiles
      * @param user_dir
      * @param tmp_dir
@@ -66,9 +66,9 @@ public class JavaRIntegration {
         //Settings for the analysis in R as a List
         ArrayList<String> settingsValues = new ArrayList<>(Arrays.asList(settings.split(",")));
 
-//        writes a text file for a file error. This will
-//                only be written when a wrong file format is 
-//                given for the analysis
+        //writes a text file for a file error. This will
+        //only be written when a wrong file format is 
+        //given for the analysis
         if (!wrongFiles.isEmpty()) {
             export.writeErrorFile(user_dir, wrongFiles);
         }

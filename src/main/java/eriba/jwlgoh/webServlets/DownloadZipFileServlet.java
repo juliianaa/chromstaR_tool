@@ -41,7 +41,7 @@ public class DownloadZipFileServlet extends HttpServlet {
         //Gets the path of the temporary directory where the exported result 
         //files are.
         String zipFilePath = request.getParameter("zipPath");
-        
+
         File directory = new File(zipFilePath);
 
         //Saves all the files in the temporary directory as a list
@@ -52,10 +52,10 @@ public class DownloadZipFileServlet extends HttpServlet {
 
         // Sends the response back to the browser for the user. 
         ServletOutputStream sos = response.getOutputStream();
-        
+
         // The content for zip file type is "application/zip". 
         response.setContentType("application/zip");
-        
+
         // Sends the content as an attachmnet for the browser to show a dialog 
         //that will let the user choose where to save the zip file.
         response.setHeader("Content-Disposition", "attachment; filename=\"chromstaR_results.zip\"");
@@ -65,13 +65,13 @@ public class DownloadZipFileServlet extends HttpServlet {
 
         //path of the root temp directory
         File tmp_dir = new File(dir);
-        
+
         //Retrieves all user directory name in the root directory
         String[] UserDirs = tmp_dir.list();
 
         //int number of two days
         int twoDays = (2 * 24 * 60 * 60 * 1000);
-        
+
         //Iterates through the list
         for (String userTmpDir : UserDirs) {
             File userDir = new File(userTmpDir);
@@ -115,7 +115,7 @@ public class DownloadZipFileServlet extends HttpServlet {
 
                 //Go through the list of subdirectory content
                 for (File analysisFile : filesInDir) {
-                    
+
                     //Begins writing a new ZIP file entry and positions the 
                     //stream to the start of the entry data.
                     zos.putNextEntry(new ZipEntry(dirName.getName()

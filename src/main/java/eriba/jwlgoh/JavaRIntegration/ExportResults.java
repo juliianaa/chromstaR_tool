@@ -23,7 +23,7 @@ public class ExportResults {
      *
      * @param analysisResultsDir path of where the results will be stored
      * @param resultsDirName name of the directory
-     * @param settings settings that were used 
+     * @param settings settings that were used
      * @param fileNames names of the files uploaded
      * @param noa number of analysis done
      */
@@ -33,15 +33,15 @@ public class ExportResults {
         System.out.println("Writing file");
 
         try {
-            
+
             //First sentence in text file
             String firstSentence = "You gave the following file for analysis number " + noa + ": \n \n ";
-            
+
             //text of analysis settings + values
             String Secondcontent = "\n Used the settings of: \n \n Bins: " + settings.get(0)
                     + " \n Univariate maximum time: " + settings.get(1)
                     + " \n Multivariate maximum time: " + settings.get(2);
-            
+
             File file = new File(analysisResultsDir + resultsDirName + "_settings.txt");
 
             // Checks if file does not exists in the resuts directory.
@@ -51,7 +51,7 @@ public class ExportResults {
             }
 
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
-           
+
             try (BufferedWriter bw = new BufferedWriter(fw)) {
                 //writes the first sentence of the file about which files where used for the analysis
                 bw.write(firstSentence);
@@ -82,18 +82,19 @@ public class ExportResults {
     }
 
     /**
-     * Writes an error message in a .txt file when a user uploads the wrong file format
-     * 
+     * Writes an error message in a .txt file when a user uploads the wrong file
+     * format
+     *
      * @param user_dir path of where the user directory is
      * @param fileNames list of the wrong uploaded file formats
-     * @throws IOException 
+     * @throws IOException
      */
     public void writeErrorFile(String user_dir, ArrayList<String> fileNames) throws IOException {
         CreateTempDir tmpDir = new CreateTempDir();
         //Creates a directory where the error text file 
         //will be stored
         String error_dir = tmpDir.createDir(user_dir, "error_");
-        
+
         //Explanation of file format error 
         String firstSentence = "The given file(s) is/are not in the correct format. \n"
                 + " This program only accepts file in bed or bam format. \n"
@@ -124,23 +125,28 @@ public class ExportResults {
     }
 
     /**
-     * 
-     * 
+     * This method reads the R-script and presents the R-script on the website.
+     *
      * @param pathToFile
      * @param settingsValues
      * @return
+     * @throws java.io.FileNotFoundException
      */
     public String writeToRscript(String pathToFile, ArrayList<String> settingsValues) throws FileNotFoundException, IOException {
 
-        
         String GenerateRscript = null;
-
+        
+        //Checks if the path contains a slash or backslash
         if (pathToFile.contains("\\") | pathToFile.contains("/")) {
             
-            if(pathToFile.contains("\\")){
-                pathToFile= pathToFile.replace("\\", File.separator);
+            //If the path contains a backslash, this will be replaced with a slash as 
+            //R does not accept a backslash
+            if (pathToFile.contains("\\")) {
+                pathToFile = pathToFile.replace("\\", File.separator);
             }
+            //Retrieves the R-script
             File rScript = new File("/srv/molgenis/rScript/callChromstaROptions.R");
+            //Reads the R-scrip and appends it to a Stringbuilder
             try (BufferedReader br = new BufferedReader(new FileReader(rScript))) {
                 StringBuilder sb = new StringBuilder();
                 String line = br.readLine();
@@ -151,20 +157,17 @@ public class ExportResults {
                     line = br.readLine();
                 }
                 
+                //User arguments will be added to the String 
                 String input = "inputOption(\"" + pathToFile + "\"," + 500 + "," + 1000 + "," + 1000 + ")";
                 GenerateRscript = sb.toString() + input;
-                
-                
-                
+
             }
-            
-            
-            
-            
+
         } else {
+            //If the path does not contain a path
             GenerateRscript = "The path given is not a valid path";
         }
-        
+
         return GenerateRscript;
 
     }
